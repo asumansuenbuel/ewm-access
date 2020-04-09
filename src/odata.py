@@ -61,6 +61,7 @@ class ODataHandler(ODataHandlerOrig):
 
         return odataconfig
 
+
     def prepare_uri(
             self, endpoint: str, ids: Optional[Dict], navigation: Optional[str] = None) -> str:
         """Prepare URI for OData call; patched version to allow http calls"""

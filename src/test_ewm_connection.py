@@ -6,23 +6,54 @@
 # This file is licensed under the Apache Software License, v. 2 except as noted
 # otherwise in the LICENSE file (https://github.com/SAP/ewm-cloud-robotics/blob/master/LICENSE)
 #
-"""Test the OData connection to the EWM system"""
+"""Test the OData connection to the EWM system
+
+This is a very basic test script to test and explore the odata services available in the SAP system.
+
+
+"""
 
 import json
 
 from odata import ODataHandler
 
+def test_service_endpoint(service, endpoint="", urlparams={}, print_result=False):
+    """Simple test function for odata service"""
+    odatahandler = ODataHandler()
+    slash = "" if endpoint == "" else "/"
+    service_endpoint = "/%s%s%s" % (service, slash, endpoint)
+    resp = odatahandler.http_get(service_endpoint, urlparams=urlparams)
+    #print('status: %d' % resp.status_code)
+    jsonobj = json.loads(resp.content)
+    if print_result:
+        print(json.dumps(jsonobj,indent=2))
+    return jsonobj;
+    
+
 if __name__ == '__main__':
 
-    odatahandler = ODataHandler()
 
-    endpoint = '/StorageBinSet'
-    #urlparams = { '$expand': 'StorageBins' }
-    #urlparams = { '$expand': "StorageBins", '$filter': "(Lgnum eq '1010')" }
-    urlparams = { '$filter': "(Lgnum eq '1710')" }
+    # some example calls:
 
-    resp = odatahandler.http_get(endpoint, urlparams=urlparams)
-    print('status: %d' % resp.status_code)
-    jsonobj = json.loads(resp.content)
-    print(json.dumps(jsonobj,indent=2))
 
+    # get endpoints for robcoewm service
+    test_service_endpoint("zewm_robco_srv");
+
+
+    # get all open warehouse tasks
+    test_service_endpoint("zewm_robco_srv", "OpenWarehouseTaskSet")
+
+    # get all storage bins
+    test_service_endpoint("zewm_robco_srv", "StorageBinSet", print_result = False)
+
+    # get endpoint for the md_product_op_srv service
+    test_service_endpoint("md_product_op_srv", print_result = False)
+
+    # get information about products
+    test_service_endpoint("md_product_op_srv", "C_Product",
+                          urlparams = {
+                              "$top" : 10,
+                              "$select" : "ProductDescription,BaseUnit"
+                          }, print_result = True)
+
+    
