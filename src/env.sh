@@ -6,5 +6,4 @@ set -a
 EWM_HOST=http://vhcalm19ci.dummy.nodomain:8000
 EWM_BASEPATH=/sap/opu/odata/sap
 EWM_AUTH=Basic
-EWM_SAP_CLIENT=100
 set +a

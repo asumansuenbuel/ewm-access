@@ -17,12 +17,17 @@ import json
 
 from odata import ODataHandler
 
-def test_service_endpoint(service, endpoint="", urlparams={}, print_result=False):
+def test_service_endpoint(service, endpoint="", urlparams={}, sap_client = '100', print_result=False):
     """Simple test function for odata service"""
     odatahandler = ODataHandler()
     slash = "" if endpoint == "" else "/"
     service_endpoint = "/%s%s%s" % (service, slash, endpoint)
-    resp = odatahandler.http_get(service_endpoint, urlparams=urlparams)
+    
+    urlparams0 = { 'sap-client': sap_client }
+    for p in urlparams:
+        urlparams0[p] = urlparams[p]
+        
+    resp = odatahandler.http_get(service_endpoint, urlparams=urlparams0)
     #print('status: %d' % resp.status_code)
     jsonobj = json.loads(resp.content)
     if print_result:
@@ -35,10 +40,8 @@ if __name__ == '__main__':
 
     # some example calls:
 
-
     # get endpoints for robcoewm service
     test_service_endpoint("zewm_robco_srv");
-
 
     # get all open warehouse tasks
     test_service_endpoint("zewm_robco_srv", "OpenWarehouseTaskSet")
@@ -53,7 +56,11 @@ if __name__ == '__main__':
     test_service_endpoint("md_product_op_srv", "C_Product",
                           urlparams = {
                               "$top" : 10,
-                              "$select" : "ProductDescription,BaseUnit"
-                          }, print_result = True)
+                          }, print_result = False)
 
     
+    test_service_endpoint("billofmaterialv2_srv","I_Material",
+                          urlparams = {
+                              "$top": 10,
+                          }, print_result = True)
+
